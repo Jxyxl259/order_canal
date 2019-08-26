@@ -1,0 +1,50 @@
+VMware 虚拟机中安装 mysql 5.7.17
+并在同一台虚拟机中部署好 canal
+虚机ip 为192.168.44.101
+关闭win 防火墙端口， Linux虚拟中的端口 开放 11111 3306 等端口
+
+——————————————————————————————————
+
+订单后台管理改造
+列表是从全量库(`orderCenter`)中取的数,
+
+数据是
+    producer -> 管道(pipline)二拆完成后发送kafka消息,  leconf 配置:secondOrderCode.topic=secondOrderCode
+    consumer -> 通过转移(transfer-service)转移到全量库中的,  kafkaConsumerPipelineSecondFinishToOrderCenter -> topic:secondOrderCode
+
+由于数据进入全量库之后，所有状态的变更（订单支付状态、订单状态、订单抛单状态）
+都是先将数据库的状态改过来之后，再发kafka消息 通知 es(ordercenter-es)
+
+
+改造后：
+canal(canal-consumer) 订阅转移(transfer-service) 转移全量库的kafka topic
+然后将数据组织成 文档形式插入es
+之后所有订单相关的状态变更 都通过 canal订阅数据库的 binlog来 实现修改
+并且，后台订单列表数据直接从 es 中取数
+
+
+
+
+支付状态
+    0 -> 未支付 / 支付中
+    1 -> 已支付
+    2 -> 退款中
+    3 -> 已退款
+
+订单状态
+    0 -> 未发货
+    1 -> 已发货
+    2 -> 已签收
+    3 -> 已取消
+    4 -> 已退货
+    5 -> 撤单中
+    6 -> 换货中
+    7 -> 退货中
+    8 -> 已拒签
+    9 -> 订单终止
+
+抛单状态
+
+冻结(IsLocked)
+    0 -> 否
+    1 -> 是

@@ -1,0 +1,13 @@
+/.idea
+*.iml
+*/target
+*.log
+/classes
+*/leconf/*
+/ordercenter-dao/src/test/java/dao/SimpleTest.java
+/ordercenter-webapp/src/main/java/com/lenovo/m2/ordercenter/web/controller/query/discount/SimgleTest.java
+/pom2
+/Date
+/commit
+/redis锁时间调整到10s
+/git

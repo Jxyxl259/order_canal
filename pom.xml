@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.lenovo.m2.buy.order.canal</groupId>
+  <artifactId>order-canal-consumer</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>order-canal-consumer</name>
+
+
+  <modules>
+      <module>order-canal-top</module>
+      <module>order-canal-service</module>
+      <module>order-canal-domain</module>
+      <module>order-canal-common</module>
+  </modules>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <log4j2.version>2.8.2</log4j2.version>
+    <spring.version>4.3.20.RELEASE</spring.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+
+      <!-- log4j2 -->
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-api</artifactId>
+          <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-core</artifactId>
+          <version>${log4j2.version}</version>
+      </dependency>
+       <!--slf4j依赖-->
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>1.7.25</version>
+      </dependency>
+      <!-- log4j2和slf4j桥接依赖 log4j2的桥接包版本尽量跟log4j2的版本保持一致-->
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j-impl</artifactId>
+          <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>com.lmax</groupId>
+          <artifactId>disruptor</artifactId>
+          <version>3.2.1</version>
+      </dependency>
+      <!-- log4j2 end -->
+
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+          <version>${spring.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>commons-logging</artifactId>
+                  <groupId>commons-logging</groupId>
+              </exclusion>
+          </exclusions>
+          <optional>true</optional>
+      </dependency>
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+          <version>${spring.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>commons-logging</artifactId>
+                  <groupId>commons-logging</groupId>
+              </exclusion>
+          </exclusions>
+          <optional>true</optional>
+      </dependency>
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+          <version>${spring.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>commons-logging</artifactId>
+                  <groupId>commons-logging</groupId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+          <version>${spring.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>commons-logging</artifactId>
+                  <groupId>commons-logging</groupId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
+          <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
+          <version>${spring.version}</version>
+          <optional>true</optional>
+          <scope>test</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jdbc</artifactId>
+          <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.18</version>
+      </dependency>
+      <dependency>
+          <groupId>com.alibaba</groupId>
+          <artifactId>druid</artifactId>
+          <version>1.0.15</version>
+      </dependency>
+      <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+          <version>2.9.8</version>
+      </dependency>
+      <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+          <version>2.9.8</version>
+      </dependency>
+      <dependency>
+          <groupId>joda-time</groupId>
+          <artifactId>joda-time</artifactId>
+          <version>2.9</version>
+      </dependency>
+
+  </dependencies>
+
+  <build>
+
+  </build>
+</project>
