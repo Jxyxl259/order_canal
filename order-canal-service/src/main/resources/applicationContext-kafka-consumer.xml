@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:config.properties"/>
+
+    <!-- 订阅转移全量库成功 kafka 消息，将订单全量库数据 注入es  -->
+    <bean id="kafkaConsumerOptionsOrderCenterTransToES" class="com.lenovo.m2.oc.canal.service.consumer.kafka.KafkaConsumerOptions">
+        <property name="connectionZk" value="${zk.address}"/>
+        <property name="zkSessionTimeout" value="4000"/>
+        <property name="zkSyncTime" value="1000"/>
+        <property name="autoCommitInterval" value="2000"/>
+        <property name="rebalanceBackOff" value="2000"/>
+        <property name="rebalanceMaxRetries" value="20"/>
+        <property name="autoOffsetReset" value="smallest"/>
+    
+    </bean>
+
+
+    <!-- 成功转移全量库 kafka消息 消费者-->
+    <bean id="kafkaConsumerTransOrderCenterSuccess" class="com.lenovo.m2.oc.canal.service.consumer.kafka.KafkaConsumer"
+          init-method="initialize" destroy-method="shutdown" >
+        <constructor-arg name="type" value="throw"/>
+        <constructor-arg name="kafkaConsumerOption" ref="kafkaConsumerOptionsOrderCenterTransToES"/>
+        <constructor-arg name="groupName" value="${transOrderCenter.success.groupName}"/><!--transOrderCenter.success.groupName=orderMainInjectES-->
+        <constructor-arg name="topicName" value="${kafka.produce.topic.orderCenterTransferFinish}"/><!-- SEND_ORDERID -->
+    </bean>
+
+</beans>

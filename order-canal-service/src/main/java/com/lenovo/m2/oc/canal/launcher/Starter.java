@@ -1,5 +1,6 @@
 package com.lenovo.m2.oc.canal.launcher;
 
+import com.lenovo.m2.oc.canal.service.consumer.kafka.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -51,12 +52,14 @@ public class Starter {
                 }
             });
 
-            executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    KafkaConsumer kafkaConsumer = (KafkaConsumer) ctx.getBean("kafkaConsumerPipelineSecondFinishToThrow");
-                    kafkaConsumer.run(10);
-                }
+            // 启动 canalConsumer
+            executorService.submit(
+//                    new Runnable() {
+//                @Override
+//                public void run() {
+//                    KafkaConsumer kafkaConsumer = (KafkaConsumer) ctx.getBean("kafkaConsumerPipelineSecondFinishToThrow");
+//                    kafkaConsumer.run(10);
+//                }
             });
 
             LOGGER.info("canal consumer started succeed!");

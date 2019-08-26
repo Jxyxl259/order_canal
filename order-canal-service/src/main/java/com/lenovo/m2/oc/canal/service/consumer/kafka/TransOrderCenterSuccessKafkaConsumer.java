@@ -1,8 +1,8 @@
-package com.lenovo.m2.oc.canal.service.consumer;
+package com.lenovo.m2.oc.canal.service.consumer.kafka;
 
-import com.lenovo.kafka.api.core.factory.KafkaConsumerOptions;
+
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
-import com.lenovo.m2.ordercenter.soa.common.util.PropertiesUtil;
+import com.lenovo.m2.oc.canal.common.utils.PropertiesUtil;
 import com.lenovo.m2.ordercenter.soa.manager.discount.OrderDiscountManager;
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
