@@ -2,6 +2,7 @@ package com.lenovo.m2.oc.canal.dao.ordercenter;
 
 import com.lenovo.m2.arch.framework.domain.PageModel;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
+import com.lenovo.m2.oc.canal.domain.esdoc.MainES;
 import com.lenovo.m2.oc.canal.domain.ordercenter.Main;
 import com.lenovo.m2.oc.canal.domain.report.OrderFreightVo;
 import com.lenovo.m2.oc.canal.domain.report.OrdersReportVo;
@@ -14,6 +15,13 @@ import java.util.Map;
  * Created by jh on 2016/6/29.
  */
 public interface MainDao {
+
+    /**
+     * 根据 订单号查询订单信息
+     * @param orderId
+     * @return
+     */
+    MainES getMainESByOrderId(Long orderId);
 
     /**
      * 动态查询sql

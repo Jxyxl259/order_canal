@@ -2,7 +2,82 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lenovo.m2.ordercenter.soa.dao.forward.MainDao">
 
-    <resultMap id="main" type="com.lenovo.m2.ordercenter.soa.domain.forward.Main">
+
+    <resultMap id="mainES" type="com.lenovo.m2.oc.canal.domain.esdoc.MainES">
+        <id column="ID" property="id"/>
+        <result column="ParentId" property="parentId"/>
+        <result column="OutId" property="outId"/>
+        <result column="CustomerId" property="customerId"/>
+        <result column="MemberCode" property="memberCode"/>
+        <result column="LenovoId" property="lenovoId"/>
+        <result column="TotalCost" property="totalCost"/>
+        <result column="TotalPay" property="totalPay"/>
+        <!--<result column="DiscountTotal" property="discountTotal"/>-->
+        <!--<result column="CashVoucher" property="cashVoucher"/>-->
+        <!--<result column="CashGiftCard" property="cashGiftCard"/>-->
+        <!--<result column="VoucherRemark" property="voucherRemark"/>-->
+        <!--<result column="Source" property="source"/>-->
+        <result column="Type" property="type"/>
+        <result column="Status" property="status"/>
+        <result column="SalesType" property="salesType"/>
+        <result column="PaymentType" property="paymentType"/>
+        <result column="PayStatus" property="payStatus"/>
+        <result column="Payment" property="payment"/>
+        <result column="BankTraceNo" property="bankTraceNo"/>
+        <result column="PayVoucherNo" property="payVoucherNo"/>
+        <result column="PayTraceNo" property="payTraceNo"/>
+        <result column="PaidTime" property="paidTime"/>
+        <result column="ShopId" property="shopId"/>
+        <!--<result column="TerminalId" property="terminalId"/>-->
+        <result column="CustomerManagerCode" property="customerManagerCode"/>
+        <!--<result column="BU" property="bu"/>-->
+        <result column="FAID" property="faId"/>
+        <result column="FAType" property="faType"/>
+        <result column="FAName" property="faName"/>
+        <result column="ExpectDate" property="expectDate"/>
+        <!--<result column="IsTax" property="isTax"/>-->
+        <!--<result column="IsSameDelivery" property="isSameDelivery"/>-->
+        <!--<result column="SystemRemark" property="systemRemark"/>-->
+        <result column="CreateTime" property="createTime"/>
+        <!--<result column="CreateBy" property="createBy"/>-->
+        <result column="UpdateTime" property="updateTime"/>
+        <result column="UpdateBy" property="updateBy"/>
+        <result column="Version" property="version"/>
+        <result column="IsLocked" property="locked"/>
+        <!--<result column="BuyerCode" property="buyerCode"/>-->
+        <result column="name" property="consigneeName"/>
+        <result column="mobile" property="consigneeMobile"/>
+        <!--<result column="address" property="deliveryAddress.address"/>-->
+        <!--<result column="customerRemark" property="belonging.customerRemark"/>-->
+        <result column="spreadType" property="spreadType"/>
+        <result column="spreadChannel" property="spreadChannel"/>
+        <result column="spreadId" property="spreadId"/>
+        <result column="throwedFailureReason" property="throwedFailureReason"/>
+        <!--<result column="throwedTime" property="belonging.throwedTime"/>-->
+        <result column="StoreId" property="storeId"/>
+        <!--<result column="TailPaymentDay" property="belonging.tailPaymentDay"/>-->
+        <!--<result column="SkuType" property="belonging.skuType"/>-->
+        <result column="C1LenovoId" property="c1LenovoId"/>
+        <!--<result column="AccountType" property="belonging.accountType"/>-->
+        <!--<result column="CreditLine" property="belonging.creditLine"/>-->
+        <!--<result column="discountLeDou" property="discount.discountLeDou"/>-->
+        <!--<result column="DiscountAmount" property="discount.discountAmount"/>-->
+        <!--<result column="rewardLeDouNum" property="discount.rewardLeDouNum"/>-->
+        <result column="ShopId" property="shopId"/>
+        <result column="CurrencyCode" property="tenant.currencyCode"/>
+        <!--<result column="Freight" property="freight"/>-->
+        <!--<result column="VirtualCoin" property="virtualCoin"/>-->
+        <!--<result column="VirtualCoinTradeNo" property="virtualCoinTradeNo"/>-->
+        <!--<result column="VirtualCoinType" property="virtualCoinType"/>-->
+        <!--oto新增字段-->
+        <!--<result column="OtoConfirmStatus" property="otoConfirmStatus"/>-->
+
+        <!--<result column="ChangePriceDiscount" property="changePriceDiscount"/>-->
+        <result column="ShipTime" property="shipTime"/>
+
+    </resultMap>
+
+    <resultMap id="main" type="com.lenovo.m2.oc.canal.domain.ordercenter.Main">
         <id column="ID" property="id"/>
         <result column="ParentId" property="parentId"/>
         <result column="OutId" property="outId"/>
@@ -75,6 +150,9 @@
         <result column="ShipTime" property="shipTime"/>
 
     </resultMap>
+
+
+
 
     <select id="getMainById" parameterType="Long" resultMap="main">
         select * from main where ID=#{Id}
@@ -1193,6 +1271,9 @@
         </if>
     </select>
 
+    <select id="getMainESByOrderId" parameterType="java.lang.Long" resultMap="mainES">
+
+    </select>
 
 
 </mapper>
