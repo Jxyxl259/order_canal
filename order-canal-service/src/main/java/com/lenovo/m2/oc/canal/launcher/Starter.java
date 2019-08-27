@@ -1,5 +1,6 @@
 package com.lenovo.m2.oc.canal.launcher;
 
+import com.lenovo.m2.oc.canal.service.consumer.OrderCenterDBCanalConsumer;
 import com.lenovo.m2.oc.canal.service.consumer.kafka.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,20 +48,13 @@ public class Starter {
             executorService.submit(new Runnable() {
                 @Override
                 public void run() {
-                    KafkaConsumer kafkaConsumer = (KafkaConsumer) ctx.getBean("kafkaConsumerTransToOrderCenterFinish");
+                    KafkaConsumer kafkaConsumer = (KafkaConsumer) ctx.getBean("kafkaConsumerTransOrderCenterSuccess");
                     kafkaConsumer.run(10);
                 }
             });
 
             // 启动 canalConsumer
-            executorService.submit(
-//                    new Runnable() {
-//                @Override
-//                public void run() {
-//                    KafkaConsumer kafkaConsumer = (KafkaConsumer) ctx.getBean("kafkaConsumerPipelineSecondFinishToThrow");
-//                    kafkaConsumer.run(10);
-//                }
-            });
+            executorService.submit(new OrderCenterDBCanalConsumer());
 
             LOGGER.info("canal consumer started succeed!");
         } catch (RuntimeException e) {

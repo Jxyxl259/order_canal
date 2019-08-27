@@ -21,9 +21,9 @@
     <!-- 成功转移全量库 kafka消息 消费者-->
     <bean id="kafkaConsumerTransOrderCenterSuccess" class="com.lenovo.m2.oc.canal.service.consumer.kafka.KafkaConsumer"
           init-method="initialize" destroy-method="shutdown" >
-        <constructor-arg name="type" value="throw"/>
+        <constructor-arg name="type" value="transToES"/> <!--  -->
         <constructor-arg name="kafkaConsumerOption" ref="kafkaConsumerOptionsOrderCenterTransToES"/>
-        <constructor-arg name="groupName" value="${transOrderCenter.success.groupName}"/><!--transOrderCenter.success.groupName=orderMainInjectES-->
+        <constructor-arg name="groupName" value="${transOrderCenter.success.groupName}"/><!-- orderMainInjectES -->
         <constructor-arg name="topicName" value="${kafka.produce.topic.orderCenterTransferFinish}"/><!-- SEND_ORDERID -->
     </bean>
 
