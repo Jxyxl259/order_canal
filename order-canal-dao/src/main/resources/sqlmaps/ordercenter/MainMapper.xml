@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lenovo.m2.ordercenter.soa.dao.forward.MainDao">
+
+    <resultMap id="main" type="com.lenovo.m2.ordercenter.soa.domain.forward.Main">
+        <id column="ID" property="id"/>
+        <result column="ParentId" property="parentId"/>
+        <result column="OutId" property="outId"/>
+        <result column="CustomerId" property="customerId"/>
+        <result column="MemberCode" property="memberCode"/>
+        <result column="LenovoId" property="lenovoId"/>
+        <result column="TotalCost" property="totalCost"/>
+        <result column="TotalPay" property="totalPay"/>
+        <result column="DiscountTotal" property="discountTotal"/>
+        <result column="CashVoucher" property="cashVoucher"/>
+        <result column="CashGiftCard" property="cashGiftCard"/>
+        <result column="VoucherRemark" property="voucherRemark"/>
+        <result column="Source" property="source"/>
+        <result column="Type" property="type"/>
+        <result column="Status" property="status"/>
+        <result column="SalesType" property="salesType"/>
+        <result column="PaymentType" property="paymentType"/>
+        <result column="PayStatus" property="payStatus"/>
+        <result column="Payment" property="payment"/>
+        <result column="BankTraceNo" property="bankTraceNo"/>
+        <result column="PayVoucherNo" property="payVoucherNo"/>
+        <result column="PayTraceNo" property="payTraceNo"/>
+        <result column="PaidTime" property="paidTime"/>
+        <result column="ShopId" property="shopId"/>
+        <result column="TerminalId" property="terminalId"/>
+        <result column="CustomerManagerCode" property="customerManagerCode"/>
+        <result column="BU" property="bu"/>
+        <result column="FAID" property="faId"/>
+        <result column="FAType" property="faType"/>
+        <result column="FAName" property="faName"/>
+        <result column="ExpectDate" property="expectDate"/>
+        <result column="IsTax" property="isTax"/>
+        <result column="IsSameDelivery" property="isSameDelivery"/>
+        <result column="SystemRemark" property="systemRemark"/>
+        <result column="CreateTime" property="createTime"/>
+        <result column="CreateBy" property="createBy"/>
+        <result column="UpdateTime" property="updateTime"/>
+        <result column="UpdateBy" property="updateBy"/>
+        <result column="Version" property="version"/>
+        <result column="IsLocked" property="locked"/>
+        <result column="BuyerCode" property="buyerCode"/>
+        <result column="name" property="deliveryAddress.name"/>
+        <result column="mobile" property="deliveryAddress.mobile"/>
+        <result column="address" property="deliveryAddress.address"/>
+        <result column="customerRemark" property="belonging.customerRemark"/>
+        <result column="spreadType" property="belonging.spreadType"/>
+        <result column="spreadChannel" property="belonging.spreadChannel"/>
+        <result column="spreadId" property="belonging.spreadId"/>
+        <result column="throwedFailureReason" property="belonging.throwedFailureReason"/>
+        <result column="throwedTime" property="belonging.throwedTime"/>
+        <result column="StoreId" property="belonging.storeId"/>
+        <result column="TailPaymentDay" property="belonging.tailPaymentDay"/>
+        <result column="SkuType" property="belonging.skuType"/>
+        <result column="C1LenovoId" property="belonging.c1LenovoId"/>
+        <result column="AccountType" property="belonging.accountType"/>
+        <result column="CreditLine" property="belonging.creditLine"/>
+        <result column="discountLeDou" property="discount.discountLeDou"/>
+        <result column="DiscountAmount" property="discount.discountAmount"/>
+        <result column="rewardLeDouNum" property="discount.rewardLeDouNum"/>
+        <result column="ShopId" property="tenant.shopId"/>
+        <result column="CurrencyCode" property="tenant.currencyCode"/>
+        <result column="Freight" property="freight"/>
+        <result column="VirtualCoin" property="virtualCoin"/>
+        <result column="VirtualCoinTradeNo" property="virtualCoinTradeNo"/>
+        <result column="VirtualCoinType" property="virtualCoinType"/>
+        <!--oto新增字段-->
+        <result column="OtoConfirmStatus" property="otoConfirmStatus"/>
+
+        <result column="ChangePriceDiscount" property="changePriceDiscount"/>
+        <result column="ShipTime" property="shipTime"/>
+
+    </resultMap>
+
+    <select id="getMainById" parameterType="Long" resultMap="main">
+        select * from main where ID=#{Id}
+    </select>
+
+
+    <select id="getTenantByOrderId" resultMap="main">
+        select ShopId,CurrencyCode from main where  id  =#{orderId}
+    </select>
+
+    <select id="getMainByMap" parameterType="map" resultMap="main">
+        select * from main
+        WHERE 1=1
+        <if test="conditions.createTimeFrom!=null and conditions.createTimeFrom!=''">
+            and CreateTime >= #{conditions.createTimeFrom}
+        </if>
+        <if test="conditions.createTimeTo!=null and conditions.createTimeTo!=''">
+            and  #{conditions.createTimeTo} >= CreateTime
+        </if>
+        <if test="conditions.tvFaid!=null and conditions.tvFaid!=''">
+          AND  FAID in ('5f08d3b8-1f69-11e7-b8c7-0050569f0752','544927e6-1f69-11e7-b8c7-0050569f0752')
+        </if>
+        <if test="conditions.id!=null and conditions.id!=''">
+            AND ID = #{conditions.id}
+        </if>
+    </select>
+
+    <select id="getMainByOutId" parameterType="String" resultMap="main">
+        select * from main where  outId=#{outId}
+    </select>
+    <select id="getOrderMainPage" parameterType="map" resultMap="main">
+        select a.*,d.name, d.mobile,d.address,md.discountLeDou,md.discountAmount,md.rewardLeDouNum,mb.customerRemark,mb.spreadType,mb.spreadChannel,mb.spreadId,mb.c1LenovoId,mb.throwedFailureReason,mb.throwedTime,mb.TailPaymentDay,mb.SkuType, mb.storeId
+        from main a
+        LEFT JOIN deliveryaddress d
+        ON (a.id=d.OrderId)
+        LEFT JOIN main_belonging mb
+        ON (a.id = mb.OrderId)
+        LEFT JOIN main_discount md
+        ON (a.id = md.OrderId)
+        <if test="conditions.snCode!=null and conditions.snCode!=''">
+            left join item i
+            on a.id=i.orderid
+        </if>
+        <!--CTO订单列表查询-->
+        <if test="conditions.ctoReviewStatus!=null and conditions.ctoReviewStatus!=''">
+            left join item i
+            on a.id=i.orderid
+        </if>
+
+        WHERE
+        d.type=0
+
+        <if test="conditions.fas!=null">
+            and a.FAID in
+            <foreach item="fa" index="index" collection="conditions.fas" open="(" separator="," close=")">
+                #{fa}
+            </foreach>
+        </if>
+        <if test="conditions.faIds!=null">
+            and a.FAID in
+            <foreach item="faId" index="index" collection="conditions.faIds" open="(" separator="," close=")">
+                #{faId}
+            </foreach>
+        </if>
+        <if test="conditions.shopIds!=null">
+            and a.ShopId in
+            <foreach item="shopId" index="index" collection="conditions.shopIds" open="(" separator="," close=")">
+                #{shopId}
+            </foreach>
+        </if>
+        <if test="conditions.orderCode!=null and conditions.orderCode!=''">
+            AND a.id = #{conditions.orderCode}
+        </if>
+
+        <if test="conditions.orderCodes != null and conditions.orderCodes!=''">
+            AND a.id in
+            <foreach item="orCode" index="index" collection="conditions.orderCodes" open="(" separator="," close=")">
+                #{orCode}
+            </foreach>
+        </if>
+
+        <if test="conditions.storeId!=null and conditions.storeId!=''">
+            AND mb.StoreId = #{conditions.storeId}
+        </if>
+        <if test="conditions.orderMainCode!=null and conditions.orderMainCode!=''">
+            AND a.ParentId = #{conditions.orderMainCode}
+        </if>
+
+        <if test="conditions.btcpCode!=null and conditions.btcpCode!=''">
+            AND a.OutId = #{conditions.btcpCode}
+        </if>
+        <if test="conditions.faName!=null and conditions.faName!=''">
+            AND a.FAName = #{conditions.faName}
+        </if>
+        <if test="conditions.customerManagerCode!=null and conditions.customerManagerCode!=''">
+            AND a.CustomerManagerCode = #{conditions.customerManagerCode}
+        </if>
+        <if test="conditions.orderStatus!=null and conditions.orderStatus!=''">
+            AND a.status = #{conditions.orderStatus}
+        </if>
+        <if test="conditions.payStatus!=null and conditions.payStatus!=''">
+            AND a.PayStatus = #{conditions.payStatus}
+        </if>
+        <if test="conditions.createTimeFrom!=null and conditions.createTimeFrom!=''">
+            AND a.CreateTime >= #{conditions.createTimeFrom}
+        </if>
+        <if test="conditions.createTimeTo!=null and conditions.createTimeTo!=''">
+            AND #{conditions.createTimeTo} >= a.CreateTime
+        </if>
+        <if test="conditions.payTimeFrom!=null and conditions.payTimeFrom!=''">
+            AND a.PaidTime >=  #{conditions.payTimeFrom}
+        </if>
+        <if test="conditions.payTimeTo!=null and conditions.payTimeTo!=''">
+            AND a.PaidTime &lt;= #{conditions.payTimeTo}
+        </if>
+        <if test="conditions.faType!=null and conditions.faType!=''">
+            AND a.FAtype = #{conditions.faType}
+        </if>
+        <if test="conditions.shopId!=null and conditions.shopId!=''">
+            AND a.shopId = #{conditions.shopId}
+        </if>
+        <if test="conditions.payTraceNo!=null and conditions.payTraceNo!=''">
+            AND a.PayTraceNo = #{conditions.payTraceNo}
+        </if>
+
+        <if test="conditions.payVoucherNo!=null and conditions.payVoucherNo!=''">
+            AND a.payVoucherNo = #{conditions.payVoucherNo}
+        </if>
+        <if test="conditions.type!=null and conditions.type!=''">
+            AND a.type = #{conditions.type}
+        </if>
+        <if test="conditions.lenovoId!=null and conditions.lenovoId!=''">
+            AND a.lenovoId = #{conditions.lenovoId}
+        </if>
+        <if test="conditions.deliveryShipName!=null and conditions.deliveryShipName!=''">
+            AND d.name = #{conditions.deliveryShipName}
+        </if>
+        <if test="conditions.deliveryShipMobile!=null and conditions.deliveryShipMobile!=''">
+            AND d.Mobile = #{conditions.deliveryShipMobile}
+        </if>
+        <if test="conditions.spreadType!=null and conditions.spreadType!=''">
+            AND mb.spreadType = #{conditions.spreadType}
+        </if>
+        <if test="conditions.spreadChannel!=null and conditions.spreadChannel!=''">
+            AND mb.spreadChannel = #{conditions.spreadChannel}
+        </if>
+        <if test="conditions.customerOrderCode!=null and conditions.customerOrderCode!=''">
+            AND mb.CustomerOrderCode = #{conditions.customerOrderCode}
+        </if>
+        <if test="conditions.customerOrderCodeSon!=null and conditions.customerOrderCodeSon!=''">
+            AND mb.CustomerOrderCodeSon = #{conditions.customerOrderCodeSon}
+        </if>
+        <if test="conditions.notSmb!=null and conditions.notSmb!=''">
+            AND a.shopId != 8
+        </if>
+        <if test="conditions.customerId!=null and conditions.customerId!=''">
+            AND a.customerId =#{conditions.customerId}
+        </if>
+        <if test="conditions.memberCode!=null and conditions.memberCode!=''">
+            AND a.memberCode =#{conditions.memberCode}
+        </if>
+        <if test="conditions.throwStatus!=null and conditions.throwStatus!=''">
+            <if test="conditions.throwStatus ==0">
+                AND (a.outId is null  or a.outId = '')
+            </if>
+            <if test="conditions.throwStatus ==1">
+                AND (a.outId is not null AND a.outId != '')
+            </if>
+        </if>
+        <if test="conditions.snCode!=null and conditions.snCode!=''">
+            AND i.snCode like '%${conditions.snCode}%'
+        </if>
+
+        <if test="conditions.cto!=null and conditions.cto!=''">
+            AND (a.type =9 or mb.SkuType REGEXP '10|11|20|21')
+        </if>
+
+        <if test="conditions.skuType!=null and conditions.skuType!=''">
+            AND  mb.SkuType REGEXP #{conditions.skuType}
+        </if>
+
+        <if test="conditions.ctoReviewStatus != null and conditions.ctoReviewStatus != ''">
+
+            <if test="conditions.ctoReviewStatus == 4">  <!-- 无需审核 -->
+                AND( i.ctoReviewStatus in (0,3) and   mb.SkuType REGEXP '10|20'  and  i.IsMainSku =1)
+            </if>
+            <if test="conditions.ctoReviewStatus == 0"> <!-- 未审核 /待审核-->
+                AND( i.ctoReviewStatus in (0,3) and   mb.SkuType REGEXP '11|21'  and  i.IsMainSku =1)
+            </if>
+            <if test="conditions.ctoReviewStatus != 0  and conditions.ctoReviewStatus != 4"> <!-- 审核通过 /审核驳回-->
+                AND (i.ctoReviewStatus = #{conditions.ctoReviewStatus }   and  i.IsMainSku =1)
+            </if>
+        </if>
+        order by a.PaidTime desc
+
+    </select>
+
+
+    <select id="getCheckMainPage" parameterType="map" resultMap="main">
+
+        -- 查询非预售的订单
+        SELECT m.*,mb.StoreId FROM main m LEFT  JOIN main_belonging  mb ON  m.id=mb.OrderId
+        WHERE m.TotalPay!=mb.Deposit  AND  m.Type!=2    AND m.PaymentType !=1   AND (m.Type!=10 OR (m.Type=10 AND  m.PaymentType=0))    and  m.payStatus!=0
+
+        <if test="conditions.paidTimeFrom !=null and conditions.paidTimeFrom !=''">
+            AND m.PaidTime >=#{conditions.paidTimeFrom}  <!--自带时分秒-->
+        </if>
+
+        <if test="conditions.paidTimeEnd !=null and conditions.paidTimeEnd !=''">
+            AND #{conditions.paidTimeEnd} > m.PaidTime   <!--自带时分秒-->
+        </if>
+        <if test="conditions.shopId !=null and conditions.shopId !=''">
+            AND m.shopId= #{conditions.shopId}
+        </if>
+        <if test="conditions.currencyCode !=null and conditions.currencyCode !=''">
+            AND m.currencyCode= #{conditions.currencyCode}
+        </if>
+        <if test="conditions.ids !=null and conditions.ids !=''">
+            AND m.id in (${conditions.ids})
+        </if>
+
+
+        UNION
+        -- 查询预售的订单
+        SELECT m.*,mb.StoreId FROM main m LEFT  JOIN main_belonging  mb ON  m.id=mb.OrderId
+        WHERE m.TotalPay= mb.Deposit+mb.RestPayment  AND m.Type=2    AND m.PaymentType !=1  AND (m.Type!=10 OR (m.Type=10 AND  m.PaymentType=0))  and m.payStatus!=0
+
+        <if test="conditions.paidTimeFrom !=null and conditions.paidTimeFrom !=''">
+            AND m.PaidTime >=#{conditions.paidTimeFrom}  <!--自带时分秒-->
+        </if>
+
+        <if test="conditions.paidTimeEnd !=null and conditions.paidTimeEnd !=''">
+            AND #{conditions.paidTimeEnd} > m.PaidTime   <!--自带时分秒-->
+        </if>
+        <if test="conditions.shopId !=null and conditions.shopId !=''">
+            AND m.shopId= #{conditions.shopId}
+        </if>
+        <if test="conditions.currencyCode !=null and conditions.currencyCode !=''">
+            AND m.currencyCode= #{conditions.currencyCode}
+        </if>
+        <if test="conditions.ids !=null and conditions.ids !=''">
+            AND m.id in (${conditions.ids})
+        </if>
+
+    </select>
+
+
+    <update id="updateStatus">
+
+        UPDATE main SET Status = #{status},
+        UpdateBy = #{updateBy},
+        UpdateTime = now()
+        WHERE id = #{orderId}
+
+    </update>
+
+    <update id="updatePayStatus">
+
+        UPDATE main SET PayStatus = #{payStatus}, updateBy = #{updateBy} ,UpdateTime = now()  WHERE id = #{id}
+
+    </update>
+
+    <update id="updateStatusAndPayStatus">
+           UPDATE main SET
+            Status = #{status},
+            PayStatus = #{payStatus},
+             UpdateBy = #{updateBy},
+             UpdateTime = now()
+            WHERE id = #{id}
+    </update>
+
+    <update id="updateCustomerManagerCodeById">
+        UPDATE main SET CustomerManagerCode = #{customerManagerCode}, updateBy = #{updateBy} ,UpdateTime = now()  WHERE id = #{orderId}
+    </update>
+
+
+    <update id="updatePaymentTypeAndPayStatus">
+        update main set Payment=#{payment},PayStatus=1 ,SystemRemark =#{systemRemark},updateBy = #{updateBy},UpdateTime = now() WHERE id = #{orderId} and  Type = 10 and PayStatus = 0
+    </update>
+
+    <update id="updateLockedByOutId">
+        UPDATE  main
+        SET   IsLocked = #{locked} ,
+        <if test="systemRemark!=null and systemRemark!=''">
+            SystemRemark = #{systemRemark} ,
+        </if>
+        updateBy = #{updateBy},
+        UpdateTime = now()
+        where OutId = #{outId};
+    </update>
+
+    <update id="updateLocked">
+        UPDATE  main
+        SET   IsLocked = #{locked} ,
+        <if test="systemRemark!=null and systemRemark!=''">
+            SystemRemark = #{systemRemark} ,
+        </if>
+        updateBy = #{updateBy},
+        UpdateTime = now()
+        where ID = #{orderId};
+    </update>
+
+    <select id="findSysRemarkByOutId"  parameterType="String" resultType="String" >
+        SELECT   SystemRemark from main where OutId = #{outId}
+    </select>
+
+    <update id="updateMainPrice">
+        UPDATE main m
+        set m.TotalCost=#{conditions.totalCost},
+            m.TotalPay=#{conditions.totalPay},
+            m.UpdateBy=#{conditions.updateBy},
+            m.UpdateTime=now(),
+            m.SystemRemark = #{conditions.systemRemark}
+        where
+         m.ID = #{conditions.orderId}
+    </update>
+
+    <select id="findSysRemarkById"  parameterType="long" resultType="String" >
+        SELECT   SystemRemark from main where id = #{orderId}
+    </select>
+
+
+    <select id="getOrderReportPage" resultType="com.lenovo.m2.ordercenter.soa.domain.forward.OrdersReportVo">
+        SELECT
+        m.ID as id
+        , m.PayTraceNo as payTraceNo
+        , m.PayVoucherNo payVoucherNo
+        , m.BankTraceNo as bankTraceNo
+        , m.CustomerId as customerPONo
+        , m.OutId as outId
+        , m.ShopId as shopId
+        , m.FAName as faName
+        , m.PaymentType as paymentType
+        , m.PayStatus as payStatus
+        , m.Type as type
+        , m.Status as status
+        , m.TotalCost as totalCost
+        , m.LenovoId as lenovoId
+        , m.TerminalId as terminalId
+        , m.SalesType as salesType
+        , m.ExpectDate as expectDate
+        , m.CustomerManagerCode as customerManagerCode
+        , m.CashVoucher as cashVoucher
+        , m.MemberCode as memberCode
+        , m.TotalPay as totalPay
+        , m.ParentId as parentId
+        , m.CreateTime as createTime
+        , m.PaidTime as paidTime
+        , m.UpdateTime as updateTime
+        , m.IsLocked as locked
+        , m.CashGiftCard as cashGiftCard
+        , m.Payment as payment
+        , m.Source source
+        , m.CurrencyCode currencyCode
+        , m.Freight freight
+        , m.VirtualCoin virtualCoin
+        , m.VirtualCoinType virtualCoinType
+
+        , mb.Enterprise as enterprise
+        , mb.EnrolledGroup as enrolledGroup
+        , mb.ThrowedTime as throwTime
+        , mb.ThrowedFailureReason as throwedFailureReason
+        , mb.TotalTax as totalTax
+        , mb.DeliverGoodsType as deliverGoodsType
+        , mb.StoreId   as storeId
+        , md.RewardLeDouNum as rewardLeDouNum
+        , mb.CustomerRemark as customerRemark
+
+        , d.Name as name
+        , d.Address as address
+        , d.Zip as zip
+        , d.Mobile as mobile
+        , d.Email as email
+        , d.Province as province
+        , d.City as city
+        , d.Area as area
+        , d.County as county
+        , d.ProviceAbbreviation as proviceAbbreviation
+        , d.TaxNo as taxNo
+
+        , it.Id as itemId
+        , it.DeatLike as deatLike
+        , it.GoodsSpec as goodsSpec
+        , it.MaterialCode as materialCode
+        , it.IsGift as gift
+        , it.GoodsName as goodsName
+        , it.GoodsCode as goodsCode
+        , it.Num as num
+        , it.GoodsPrice as goodsPrice
+        , it.Amount as amount
+        , it.ItemAsc as itemAsc
+        , it.LineTax as lineTax
+        , it.IsMainSku as mainSku
+        , it.CTORemark as ctoRemark
+        , it.DiscountInnerBuyMoney as discountInnerBuyMoney
+        , it.DiscountFirst as discountFirst
+        , it.DiscountCoupons as discountCoupons
+        , it.DiscountCouponCode as discountCouponCode
+        , it.DiscountFullReduce as discountFullReduce
+        , it.DiscountImmediacy as discountImmediacy
+        , it.DiscountLeDou as discountLeDou
+        , it.DiscountPresell as discountPresell
+        , it.ChangePriceDiscount as changePriceDiscount
+        , iv.Type as taxType
+        , iv.Title as title
+        , iv.TaxpayerIdentity as taxpayerIdentity
+        , iv.Units as units
+
+
+        FROM main m
+        LEFT JOIN deliveryaddress d ON (m.ID = d.OrderId)
+        LEFT JOIN item it ON (it.OrderId = m.ID)
+        LEFT JOIN main_discount md ON (m.ID = md.OrderId)
+        LEFT JOIN main_belonging mb ON (m.ID = mb.OrderId)
+        LEFT JOIN invoice iv ON (iv.OrderId = m.ID)
+        WHERE
+        d.Type = 0
+        <if test="conditions.fas!=null">
+            and m.FAID in
+            <foreach item="fa" index="index" collection="conditions.fas" open="(" separator="," close=")">
+                #{fa}
+            </foreach>
+        </if>
+        <if test="conditions.faIds!=null">
+            and m.FAID in
+            <foreach item="faId" index="index" collection="conditions.faIds" open="(" separator="," close=")">
+                #{faId}
+            </foreach>
+        </if>
+        <if test="conditions.shopIds!=null">
+            and m.ShopId in
+            <foreach item="shopId" index="index" collection="conditions.shopIds" open="(" separator="," close=")">
+                #{shopId}
+            </foreach>
+        </if>
+
+        <if test="conditions.orderCodes !=null and conditions.orderCodes!=''">
+            AND m.id in
+            <foreach item="orCode" index="index" collection="conditions.orderCodes" open="(" separator="," close=")">
+                #{orCode}
+            </foreach>
+        </if>
+
+        <if test="conditions.storeId!=null and conditions.storeId!=''">
+            and mb.StoreId = #{conditions.storeId}
+        </if>
+        <if test="conditions.payTraceNo!=null and conditions.payTraceNo!=''">
+            and m.PayTraceNo = #{conditions.payTraceNo}
+        </if>
+        <if test="conditions.payVoucherNo !=null and conditions.payVoucherNo !=''">
+            and m.PayVoucherNo  = #{conditions.payVoucherNo }
+        </if>
+        <if test="conditions.outId!=null and conditions.outId!=''">
+            and m.OutId = #{conditions.outId}
+        </if>
+        <if test="conditions.shopId!=null and conditions.shopId!=''">
+            and m.shopId = #{conditions.shopId}
+        </if>
+        <if test="conditions.id!=null and conditions.id!=''">
+            and m.ID = #{conditions.id}
+        </if>
+        <if test="conditions.FAName!=null and conditions.FAName!=''">
+            and m.FAName = #{conditions.FAName}
+        </if>
+        <if test="conditions.outIdNull!=null and conditions.outIdNull!=''">
+            and (m.outId is null || m.outId ='')
+         </if>
+        <if test="conditions.type!=null and conditions.type!=''">
+            and m.Type = #{conditions.type}
+        </if>
+        <if test="conditions.createTimeFrom!=null and conditions.createTimeFrom!=''">
+            and m.CreateTime >=  #{conditions.createTimeFrom}
+        </if>
+        <if test="conditions.createTimeTo!=null and conditions.createTimeTo!=''">
+            and  #{conditions.createTimeTo}>= m.CreateTime
+        </if>
+        <if test="conditions.paidTime_begin!=null and conditions.paidTime_begin!=''">
+            and m.PaidTime >= #{conditions.paidTime_begin}
+        </if>
+        <if test="conditions.paidTime_end!=null and conditions.paidTime_end!=''">
+            and  #{conditions.paidTime_end} >= m.PaidTime
+        </if>
+        <if test="conditions.name!=null and conditions.name!=''">
+            and d.Name = #{conditions.name}
+        </if>
+        <if test="conditions.goodsName!=null and conditions.goodsName!=''">
+            and it.GoodsName = #{conditions.goodsName}
+        </if>
+        <if test="conditions.shipDate!=null and conditions.shipDate!=''">
+            and d.shipdate = #{conditions.shipDate}
+        </if>
+        <if test="conditions.logisticsNo!=null and conditions.logisticsNo!=''">
+            and d.logisticsNo = #{conditions.logisticsNo}
+        </if>
+        <if test="conditions.mobile!=null and conditions.mobile!=''">
+            and d.Mobile = #{conditions.mobile}
+        </if>
+        <if test="conditions.deatLike!=null and conditions.deatLike!=''">
+            and it.DeatLike = #{conditions.deatLike}
+        </if>
+        <if test="conditions.materialCode!=null and conditions.materialCode!=''">
+            and it.MaterialCode = #{conditions.materialCode}
+        </if>
+        <if test="conditions.title!=null and conditions.title!=''">
+            and iv.Title = #{conditions.title}
+        </if>
+        <if test="conditions.parentId!=null and conditions.parentId!=''">
+            AND m.ParentId = #{conditions.parentId}
+        </if>
+        <if test="conditions.lenovoId!=null and conditions.lenovoId!=''">
+            AND m.LenovoId = #{conditions.lenovoId}
+        </if>
+        <if test="conditions.status!=null and conditions.status!=''">
+            and m.Status = #{conditions.status}
+        </if>
+
+        <if test="conditions.enterprise!=null and conditions.enterprise!=''">
+            and mb.Enterprise = #{conditions.enterprise}
+        </if>
+        <if test="conditions.enrolledGroup!=null and conditions.enrolledGroup!=''">
+            and mb.EnrolledGroup = #{conditions.enrolledGroup}
+        </if>
+        <if test="conditions.payment!=null and conditions.payment!=''">
+            and m.payment = #{conditions.payment}
+        </if>
+        <if test="conditions.shipStatus!=null and conditions.shipStatus!=''">
+            and m.shipstatus in
+            <foreach item="shipStatus" index="index" collection="conditions.shipStatus" open="(" separator=","
+                     close=")">
+                #{shipStatus}
+            </foreach>
+        </if>
+
+        <if test="conditions.throwStatus!=null and conditions.throwStatus!=''">
+            <if test="conditions.throwStatus ==0">
+                AND (m.outId is null OR m.outId = '')
+            </if>
+            <if test="conditions.throwStatus ==1">
+                AND (m.outId is not null OR m.outId != '')
+            </if>
+        </if>
+        <if test="conditions.locked!=null and conditions.locked!=''">
+            <if test='conditions.locked =="true" '>
+                AND m.IsLocked = 1
+            </if>
+            <if test='conditions.locked =="false" '>
+                AND m.IsLocked = 0
+            </if>
+            AND (m.FAType =0 or m.FAType =3)
+        </if>
+        ORDER BY m.createTime DESC
+    </select>
+
+    <select id="getOrderReportForPage" resultType="com.lenovo.m2.ordercenter.soa.domain.forward.OrdersReportVo">
+        SELECT
+          m.ID as id
+        , m.PayTraceNo as payTraceNo
+        , m.PayVoucherNo payVoucherNo
+        , m.BankTraceNo as bankTraceNo
+        , m.CustomerId as customerPONo
+        , m.OutId as outId
+        , m.ShopId as shopId
+        , m.FAName as faName
+        , m.PaymentType as paymentType
+        , m.PayStatus as payStatus
+        , m.Type as type
+        , m.Status as status
+        , m.TotalCost as totalCost
+        , m.LenovoId as lenovoId
+        , m.TerminalId as terminalId
+        , m.SalesType as salesType
+        , m.ExpectDate as expectDate
+        , m.CustomerManagerCode as customerManagerCode
+        , m.CashVoucher as cashVoucher
+        , m.MemberCode as memberCode
+        , m.TotalPay as totalPay
+        , m.ParentId as parentId
+        , m.CreateTime as createTime
+        , m.PaidTime as paidTime
+        , m.UpdateTime as updateTime
+        , m.IsLocked as locked
+        , m.CashGiftCard as cashGiftCard
+        , m.Payment as payment
+        , m.Source source
+        , m.CurrencyCode currencyCode
+        , m.Freight freight
+        , m.VirtualCoin virtualCoin
+        , m.VirtualCoinType virtualCoinType
+
+        , mb.Enterprise as enterprise
+        , mb.EnrolledGroup as enrolledGroup
+        , mb.ThrowedTime as throwTime
+        , mb.ThrowedFailureReason as throwedFailureReason
+        , mb.TotalTax as totalTax
+        , mb.DeliverGoodsType as deliverGoodsType
+        , mb.StoreId   as storeId
+        , md.RewardLeDouNum as rewardLeDouNum
+        , mb.CustomerRemark as customerRemark
+
+        , d.Name as name
+        , d.Address as address
+        , d.Zip as zip
+        , d.Mobile as mobile
+        , d.Email as email
+        , d.Province as province
+        , d.City as city
+        , d.Area as area
+        , d.County as county
+        , d.ProviceAbbreviation as proviceAbbreviation
+        , d.TaxNo as taxNo
+
+        , it.Id as itemId
+        , it.DeatLike as deatLike
+        , it.GoodsSpec as goodsSpec
+        , it.MaterialCode as materialCode
+        , it.IsGift as gift
+        , it.GoodsName as goodsName
+        , it.GoodsCode as goodsCode
+        , it.Num as num
+        , it.GoodsPrice as goodsPrice
+        , it.Amount as amount
+        , it.ItemAsc as itemAsc
+        , it.LineTax as lineTax
+        , it.IsMainSku as mainSku
+        , it.CTORemark as ctoRemark
+        , it.DiscountInnerBuyMoney as discountInnerBuyMoney
+        , it.DiscountFirst as discountFirst
+        , it.DiscountCoupons as discountCoupons
+        , it.DiscountCouponCode as discountCouponCode
+        , it.DiscountFullReduce as discountFullReduce
+        , it.DiscountImmediacy as discountImmediacy
+        , it.DiscountLeDou as discountLeDou
+        , it.ChangePriceDiscount as changePriceDiscount
+        , iv.Type as taxType
+        , iv.Title as title
+        , iv.TaxpayerIdentity as taxpayerIdentity
+        , iv.Units as units
+
+        FROM main m
+        LEFT JOIN deliveryaddress d ON (m.ID = d.OrderId)
+        LEFT JOIN item it ON (it.OrderId = m.ID)
+        LEFT JOIN main_discount md ON (m.ID = md.OrderId)
+        LEFT JOIN main_belonging mb ON (m.ID = mb.OrderId)
+        LEFT JOIN invoice iv ON (iv.OrderId = m.ID)
+        WHERE
+        d.Type = 0
+        <if test="conditions.fas!=null">
+            and m.FAID in
+            <foreach item="fa" index="index" collection="conditions.fas" open="(" separator="," close=")">
+                #{fa}
+            </foreach>
+        </if>
+        <if test="conditions.faIds!=null">
+            and m.FAID in
+            <foreach item="faId" index="index" collection="conditions.faIds" open="(" separator="," close=")">
+                #{faId}
+            </foreach>
+        </if>
+        <if test="conditions.shopIds!=null">
+            and m.ShopId in
+            <foreach item="shopId" index="index" collection="conditions.shopIds" open="(" separator="," close=")">
+                #{shopId}
+            </foreach>
+        </if>
+
+        <if test="conditions.orderCodes != null and conditions.orderCodes!=''">
+            AND m.id in
+            <foreach item="orCode" index="index" collection="conditions.orderCodes" open="(" separator="," close=")">
+                #{orCode}
+            </foreach>
+        </if>
+
+        <if test="conditions.storeId!=null and conditions.storeId!=''">
+            and mb.StoreId = #{conditions.storeId}
+        </if>
+        <if test="conditions.payTraceNo!=null and conditions.payTraceNo!=''">
+            and m.PayTraceNo = #{conditions.payTraceNo}
+        </if>
+        <if test="conditions.payVoucherNo !=null and conditions.payVoucherNo !=''">
+            and m.PayVoucherNo  = #{conditions.payVoucherNo }
+        </if>
+        <if test="conditions.outId!=null and conditions.outId!=''">
+            and m.OutId = #{conditions.outId}
+        </if>
+        <if test="conditions.shopId!=null and conditions.shopId!=''">
+            and m.shopId = #{conditions.shopId}
+        </if>
+        <if test="conditions.id!=null and conditions.id!=''">
+            and m.ID = #{conditions.id}
+        </if>
+        <if test="conditions.FAName!=null and conditions.FAName!=''">
+            and m.FAName = #{conditions.FAName}
+        </if>
+        <if test="conditions.outIdNull!=null and conditions.outIdNull!=''">
+            and (m.outId is null || m.outId ='')
+         </if>
+        <if test="conditions.type!=null and conditions.type!=''">
+            and m.Type = #{conditions.type}
+        </if>
+        <if test="conditions.createTimeFrom!=null and conditions.createTimeFrom!=''">
+            and m.CreateTime >=  #{conditions.createTimeFrom}
+        </if>
+        <if test="conditions.createTimeTo!=null and conditions.createTimeTo!=''">
+            and  #{conditions.createTimeTo}>= m.CreateTime
+        </if>
+        <if test="conditions.paidTime_begin!=null and conditions.paidTime_begin!=''">
+            and m.PaidTime >= #{conditions.paidTime_begin}
+        </if>
+        <if test="conditions.paidTime_end!=null and conditions.paidTime_end!=''">
+            and  #{conditions.paidTime_end} >= m.PaidTime
+        </if>
+        <if test="conditions.name!=null and conditions.name!=''">
+            and d.Name = #{conditions.name}
+        </if>
+        <if test="conditions.goodsName!=null and conditions.goodsName!=''">
+            and it.GoodsName = #{conditions.goodsName}
+        </if>
+        <if test="conditions.shipDate!=null and conditions.shipDate!=''">
+            and d.shipdate = #{conditions.shipDate}
+        </if>
+        <if test="conditions.logisticsNo!=null and conditions.logisticsNo!=''">
+            and d.logisticsNo = #{conditions.logisticsNo}
+        </if>
+        <if test="conditions.mobile!=null and conditions.mobile!=''">
+            and d.Mobile = #{conditions.mobile}
+        </if>
+        <if test="conditions.deatLike!=null and conditions.deatLike!=''">
+            and it.DeatLike = #{conditions.deatLike}
+        </if>
+        <if test="conditions.materialCode!=null and conditions.materialCode!=''">
+            and it.MaterialCode = #{conditions.materialCode}
+        </if>
+        <if test="conditions.title!=null and conditions.title!=''">
+            and iv.Title = #{conditions.title}
+        </if>
+        <if test="conditions.parentId!=null and conditions.parentId!=''">
+            AND m.ParentId = #{conditions.parentId}
+        </if>
+        <if test="conditions.lenovoId!=null and conditions.lenovoId!=''">
+            AND m.LenovoId = #{conditions.lenovoId}
+        </if>
+        <if test="conditions.status!=null and conditions.status!=''">
+            and m.Status = #{conditions.status}
+        </if>
+
+        <if test="conditions.enterprise!=null and conditions.enterprise!=''">
+            and mb.Enterprise = #{conditions.enterprise}
+        </if>
+        <if test="conditions.enrolledGroup!=null and conditions.enrolledGroup!=''">
+            and mb.EnrolledGroup = #{conditions.enrolledGroup}
+        </if>
+        <if test="conditions.payment!=null and conditions.payment!=''">
+            and m.payment = #{conditions.payment}
+        </if>
+        <if test="conditions.shipStatus!=null and conditions.shipStatus!=''">
+            and m.shipstatus in
+            <foreach item="shipStatus" index="index" collection="conditions.shipStatus" open="(" separator=","
+                     close=")">
+                #{shipStatus}
+            </foreach>
+        </if>
+
+        <if test="conditions.throwStatus!=null and conditions.throwStatus!=''">
+            <if test="conditions.throwStatus ==0">
+                AND (m.outId is null OR m.outId = '')
+            </if>
+            <if test="conditions.throwStatus ==1">
+                AND (m.outId is not null OR m.outId != '')
+            </if>
+        </if>
+        <if test="conditions.locked!=null and conditions.locked!=''">
+            <if test='conditions.locked =="true" '>
+                AND m.IsLocked = 1
+            </if>
+            <if test='conditions.locked =="false" '>
+                AND m.IsLocked = 0
+            </if>
+            AND (m.FAType =0 or m.FAType =3)
+        </if>
+        ORDER BY m.createTime DESC    LIMIT #{pageNum} , #{pageSize}
+    </select>
+
+    <select id="getOrderReportLists" resultType="com.lenovo.m2.ordercenter.soa.domain.forward.OrdersReportVo">
+        SELECT
+        m.ID as id
+        , m.PayTraceNo as payTraceNo
+        , m.PayVoucherNo payVoucherNo
+        , m.BankTraceNo as bankTraceNo
+        , m.CustomerId as customerPONo
+        , m.OutId as outId
+        , m.ShopId as shopId
+        , m.FAName as faName
+        , m.PaymentType as paymentType
+        , m.PayStatus as payStatus
+        , m.Type as type
+        , d.Name as name
+        , m.Status as status
+        , m.TotalCost as totalCost
+        , m.LenovoId as lenovoId
+        , m.TerminalId as terminalId
+        , m.SalesType as salesType
+
+        , mb.Enterprise as enterprise
+        , mb.EnrolledGroup as enrolledGroup
+
+        , mb.ThrowedTime as throwTime
+        , mb.ThrowedFailureReason as throwedFailureReason
+
+        , m.CustomerManagerCode as customerManagerCode
+        , m.CashVoucher as cashVoucher
+        , m.MemberCode as memberCode
+        , mb.StoreId   as storeId
+        , md.DiscountLeDou as discountLeDou
+        , md.RewardLeDouNum as rewardLeDouNum
+        , d.Address as address
+        , d.Zip as zip
+        , d.Mobile as mobile
+        , d.Email as email
+        , d.Province as province
+        , d.City as city
+        , d.County as county
+        , m.TotalPay as totalPay
+        , m.ParentId as parentId
+        , m.CreateTime as createTime
+        , m.PaidTime as paidTime
+        , m.UpdateTime as updateTime
+        , m.IsLocked as locked
+
+        , m.Payment as payment
+        ,(m.TotalPay + IFNULL(m.CashVoucher,0) + IFNULL(m.CashGiftCard,0)) as skMoney
+        , mb.CustomerRemark as customerRemark
+        , iv.Type as taxType
+        , iv.Title as title
+        , it.DeatLike as deatLike
+        , it.GoodsSpec as goodsSpec
+        , it.MaterialCode as materialCode
+        , it.IsGift as gift
+        , it.GoodsName as goodsName
+        , it.GoodsCode as goodsCode
+        , it.Num as num
+        , it.GoodsPrice as goodsPrice
+        , it.ItemAsc as itemAsc
+        ,((it.DiscountLeDou/100+ifnull(it.DiscountInnerBuyMoney,0)+it.DiscountFirst+it.DiscountCoupons+it.DiscountCouponCode+it.DiscountFullReduce)/it.Num+it.DiscountImmediacy
+        ) as favourableTotalMoney
+        ,(it.GoodsPrice-
+        ((it.DiscountLeDou/100+ifnull(it.DiscountInnerBuyMoney,0)+it.DiscountFirst+it.DiscountCoupons+
+        it.DiscountCouponCode)/it.Num+it.DiscountImmediacy)
+        ) as projectSJPrice
+        ,
+        (
+        it.DiscountLeDou/100+ifnull(it.DiscountInnerBuyMoney,0)+it.DiscountFirst+it.DiscountCoupons+it.DiscountCouponCode+it.DiscountImmediacy*it.Num+it.DiscountFullReduce+it.ChangePriceDiscount)
+        as favourablePay
+        , it.DiscountInnerBuyMoney as discountInnerBuyMoney
+        , m.Source source
+        , m.CurrencyCode currencyCode
+        FROM main m
+        LEFT JOIN deliveryaddress d ON (m.ID = d.OrderId)
+        LEFT JOIN item it ON (it.OrderId = m.ID)
+        LEFT JOIN main_discount md ON (m.ID = md.OrderId)
+        LEFT JOIN main_belonging mb ON (m.ID = mb.OrderId)
+        LEFT JOIN invoice iv ON (iv.OrderId = m.ID)
+        WHERE
+        d.Type = 0
+        AND
+        <if test='type == 0 '>
+            m.id in
+            <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test='type == 1 '>
+            m.ParentId in
+            <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY m.createTime DESC
+    </select>
+
+    <update id="updateOutIdByOrderId">
+        UPDATE main SET OutId = #{outId},
+        UpdateBy = #{updateBy},
+        UpdateTime = now()
+        WHERE id = #{orderId}
+    </update>
+
+    <select id="getHsOrderInfoByParentId" resultMap="main">
+        SELECT
+        m.*,
+        de.name,
+        de.mobile,
+        mb.CreditLine
+        FROM main m
+        LEFT JOIN deliveryaddress de
+        ON m.id = de.OrderId
+        LEFT JOIN main_belonging mb
+        ON m.id = mb.OrderId
+        where m.ParentId= #{parentId}
+
+    </select>
+
+    <select id="findOrderByLenovoId" resultMap="main">
+        SELECT   * from main where LenovoId = #{lenovoId} AND Status in (0,1,2,6) AND  CreateTime >#{startTime} AND   #{endTime} >=CreateTime
+    </select>
+
+
+
+
+    <!--OTO订单列表查询-->
+    <select id="getScmpurchaseList" parameterType="map" resultMap="main">
+        select DISTINCT
+          m.*
+        from main m
+        left join deliveryaddress d on m.ID = d.orderId
+        <if test="(conditions.stores != null and conditions.stores!='') or (conditions.storeCode != null and conditions.storeCode != '')">
+          left join main_belonging mb on m.ID = mb.orderId
+        </if>
+        <where>
+            <if test="conditions.purchaseno != null and conditions.purchaseno!=''">
+                and m.ID = #{conditions.purchaseno,jdbcType=VARCHAR}
+            </if>
+            <if test="conditions.startordertime != null and conditions.startordertime!=''">
+                and <![CDATA[ m.PaidTime >=  #{conditions.startordertime}]]>
+            </if>
+            <if test="conditions.endordertime != null and conditions.endordertime!=''">
+                and <![CDATA[ m.PaidTime <  #{conditions.endordertime} ]]>
+            </if>
+
+            and m.Type = 10 and d.type = 0
+
+            <if test="conditions.orderstatus != null and conditions.orderstatus!=''">
+                <choose>
+                    <when test="conditions.orderstatus == 7">
+                        and m.PayStatus = 2
+                    </when>
+                    <when test="conditions.orderstatus == 8">
+                        and m.PayStatus = 3
+                    </when>
+                    <when test="conditions.orderstatus == 9">
+                        and  m.Status = 0
+                        and  m.OtoConfirmStatus = 0
+                        and  m.PaymentType = 1
+                        and  m.PayStatus = 0
+                    </when>
+                    <when test="conditions.orderstatus == 0">
+                        and ((m.Status = 0 and  m.PaymentType = 0) or (m.Status = 0 and  m.OtoConfirmStatus = 1 and m.PaymentType = 1))
+                    </when>
+                    <when test="conditions.orderstatus == 3">
+                        and  m.Status = 3
+                        and  m.PayStatus != 2
+                        and  m.PayStatus != 3
+                    </when>
+                    <otherwise>
+                        and m.Status = #{conditions.orderstatus,jdbcType=INTEGER}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="conditions.linkman != null and conditions.linkman!=''">
+                and d.name = #{conditions.linkman,jdbcType=VARCHAR}
+            </if>
+
+            <if test="conditions.paystatus !=null and conditions.paystatus!=''">
+                and m.PaymentType = #{conditions.paystatus,jdbcType=INTEGER}
+            </if>
+            <if test="conditions.mobile != null and conditions.mobile!=''" >
+                and d.mobile = #{conditions.mobile,jdbcType=VARCHAR}
+            </if>
+            <!--
+            <if test="conditions.storeCode != null and conditions.storeCode!=''" >
+                and mb.StoreCode = #{conditions.storeCode,jdbcType=VARCHAR}
+            </if>
+            -->
+            <if test="conditions.falist != null and conditions.falist!=''">
+                and m.FAID IN
+                <foreach close=")" collection="conditions.falist" item="listItem" open="(" separator=",">
+                    #{listItem}
+                </foreach>
+            </if>
+            <if test="conditions.stores != null and conditions.stores!=''">
+                <choose>
+                    <when test="conditions.storeCode != null and conditions.storeCode!=''">
+                        and mb.StoreCode = #{conditions.storeCode,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        and mb.StoreId IN
+                        <foreach close=")" collection="conditions.stores" item="listItem" open="(" separator=",">
+                            #{listItem}
+                        </foreach>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="conditions.shopids!=null and conditions.shopids!=''">
+                and m.shopid IN
+                <foreach close=")" collection="conditions.shopids" item="listItem" open="(" separator=",">
+                    #{listItem}
+                </foreach>
+            </if>
+        </where>
+        order by m.PaidTime desc
+    </select>
+
+    <!--OTO订单备注查询-->
+    <select id="getScmpurchaseRemark" resultMap="main">
+        select
+          SystemRemark
+        from main
+        where id = #{orderId}
+    </select>
+
+    <!--保存OTO订单备注-->
+    <insert id="insertScmpurchaseRemark">
+        update main
+        set SystemRemark = #{remark}
+        where id = #{orderId}
+    </insert>
+
+    <update id="updateOtoConfirmStatus">
+        UPDATE main SET
+        OtoConfirmStatus = #{otoConfirmStatus},
+        UpdateBy = #{updateBy},
+        UpdateTime = now()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateSignStatus">
+        UPDATE main SET Status = #{status},
+        UpdateTime = now(),
+        SignTime = #{signTime}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getOrderFreightReport" parameterType="map" resultType="com.lenovo.m2.ordercenter.soa.domain.open.OrderFreightVo">
+        select
+          m.id,
+          m.outId,
+          m.shopId,
+          m.lenovoId,
+          m.totalPay - freight as totalPay,
+          m.freight,
+          m.payment,
+          m.paidTime,
+          m.currencyCode,
+          d.DeliverNo as customerCode
+        from main m
+        inner join deliveryaddress d on m.id = d.orderId
+        where (m.type = 15 or  m.type = 16)
+        and d.type = 0
+        <if test="conditions.shopId != null and conditions.shopId !=''" >
+            and m.ShopId = #{conditions.shopId}
+        </if>
+        <if test="conditions.orderId != null and conditions.orderId !=''" >
+            and m.id = #{conditions.orderId}
+        </if>
+        <if test="conditions.btcpSo != null and conditions.btcpSo!=''" >
+            and m.outId = #{conditions.btcpSo}
+        </if>
+        <if test="conditions.createBeginTime != null and conditions.createBeginTime!=''" >
+            and m.CreateTime >=  #{conditions.createBeginTime}
+        </if>
+        <if test="conditions.createEndTime != null and conditions.createEndTime!=''" >
+            and #{conditions.createEndTime} >=  m.CreateTime
+        </if>
+        <if test="conditions.payType != null and conditions.payType!=''" >
+            and m.payment = #{conditions.payType}
+        </if>
+        <if test="conditions.faIds!=null">
+            and m.FaId in
+            <foreach item="faId" index="index" collection="conditions.faIds" open="(" separator="," close=")">
+                #{faId}
+            </foreach>
+        </if>
+        <if test="conditions.shopids!=null and conditions.shopids!=''">
+        and m.shopid IN
+        <foreach close=")" collection="conditions.shopids" item="listItem" open="(" separator=",">
+            #{listItem}
+        </foreach>
+    </if>
+    </select>
+
+    <select id="getOrderFreightReportTotal" parameterType="map" resultType="java.lang.Long">
+        select
+        count (*)
+        from main m
+        inner join deliveryaddress d on m.id = d.orderId
+        where (m.type = 15 or  m.type = 16)
+        and d.type = 0
+        <if test="conditions.shopId != null and conditions.shopId !=''" >
+            and m.ShopId = #{conditions.shopId}
+        </if>
+        <if test="conditions.orderId != null and conditions.orderId !=''" >
+            and m.id = #{conditions.orderId}
+        </if>
+        <if test="conditions.btcpSo != null and conditions.btcpSo!=''" >
+            and m.outId = #{conditions.btcpSo}
+        </if>
+        <if test="conditions.createBeginTime != null and conditions.createBeginTime!=''" >
+            and m.CreateTime >=  #{conditions.createBeginTime}
+        </if>
+        <if test="conditions.createEndTime != null and conditions.createEndTime!=''" >
+            and #{conditions.createEndTime} >=  m.CreateTime
+        </if>
+        <if test="conditions.payType != null and conditions.payType!=''" >
+            and m.payment = #{conditions.payType}
+        </if>
+        <if test="conditions.faIds!=null">
+            and m.FaId in
+            <foreach item="faId" index="index" collection="conditions.faIds" open="(" separator="," close=")">
+                #{faId}
+            </foreach>
+        </if>
+        <if test="conditions.shopids!=null and conditions.shopids!=''">
+            and m.shopid IN
+            <foreach close=")" collection="conditions.shopids" item="listItem" open="(" separator=",">
+                #{listItem}
+            </foreach>
+        </if>
+    </select>
+
+
+
+</mapper>

@@ -15,6 +15,7 @@
       <module>order-canal-top</module>
       <module>order-canal-service</module>
       <module>order-canal-domain</module>
+      <module>order-canal-dao</module>
       <module>order-canal-common</module>
   </modules>
 
@@ -27,6 +28,8 @@
       <spring.version>4.3.20.RELEASE</spring.version>
       <framework-domain.version>1.1.1-SNAPSHOT</framework-domain.version>
       <kafka.version>0.8.2.2</kafka.version>
+      <framework-mybatis.version>1.1.1-SNAPSHOT</framework-mybatis.version>
+      <jackson.version>1.9.11</jackson.version>
 
   </properties>
 
@@ -169,12 +172,47 @@
           <artifactId>framework-domain</artifactId>
           <version>${framework-domain.version}</version>
       </dependency>
-
+      <dependency>
+          <groupId>com.lenovo.m2.arch.tool</groupId>
+          <artifactId>tool-util</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </dependency>
       <!-- kafka -->
       <dependency>
           <groupId>org.apache.kafka</groupId>
           <artifactId>kafka_2.10</artifactId>
           <version>${kafka.version}</version>
+      </dependency>
+
+      <!-- mybatis -->
+      <dependency>
+          <groupId>com.lenovo.m2.arch.framework</groupId>
+          <artifactId>framework-mybatis</artifactId>
+          <version>${framework-mybatis.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>commons-logging</artifactId>
+                  <groupId>commons-logging</groupId>
+              </exclusion>
+          </exclusions>
+          <optional>true</optional>
+      </dependency>
+      <dependency>
+          <groupId>org.mybatis</groupId>
+          <artifactId>mybatis-spring</artifactId>
+          <version>1.2.2</version>
+      </dependency>
+
+      <!-- jackson -->
+      <dependency>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-core-asl</artifactId>
+          <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-mapper-asl</artifactId>
+          <version>${jackson.version}</version>
       </dependency>
   </dependencies>
 
